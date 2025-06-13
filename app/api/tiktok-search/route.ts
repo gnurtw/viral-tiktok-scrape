@@ -47,26 +47,34 @@ export async function POST(request: Request) {
 
     const data = await response.json()
 
-    const videos = data.data?.videos?.map((video: any) => {
-      const play_count = video.play_count || 0
-      const digg_count = video.digg_count || 0
-      const share_count = video.share_count || 0
+    const videos = data.data?.videos
+      ?.map((video: any) => {
+        // Filter out videos without a valid ID at the source
+        if (!video.id) {
+          console.warn("Video found without a valid ID, skipping:", video)
+          return null // Return null for invalid videos
+        }
 
-      // Calculate Engagement Rate = (digg_count / play_count) * 100%
-      // Round to 1 decimal place as requested
-      const engagement_rate = play_count > 0 ? ((digg_count / play_count) * 100).toFixed(1) : "0.0"
+        const play_count = video.play_count || 0
+        const digg_count = video.digg_count || 0
+        const share_count = video.share_count || 0
 
-      return {
-        id: video.id,
-        title: video.title || video.music_info?.title || video.desc || "Không có tiêu đề", // Prioritize video.title
-        play_count,
-        digg_count,
-        share_count,
-        engagement_rate: `${engagement_rate}%`,
-        cover_url: video.cover || video.music_info?.cover || video.video?.cover || "/placeholder.svg", // Prioritize video.cover
-        video_url: video.play || video.video?.play_addr?.url_list?.[0] || "#", // Prioritize video.play
-      }
-    })
+        // Calculate Engagement Rate = (digg_count / play_count) * 100%
+        // Round to 1 decimal place as requested
+        const engagement_rate = play_count > 0 ? ((digg_count / play_count) * 100).toFixed(1) : "0.0"
+
+        return {
+          id: video.id,
+          title: video.title || video.music_info?.title || video.desc || "Không có tiêu đề", // Prioritize video.title
+          play_count,
+          digg_count,
+          share_count,
+          engagement_rate: `${engagement_rate}%`,
+          cover_url: video.cover || video.music_info?.cover || video.video?.cover || "/placeholder.svg", // Prioritize video.cover
+          video_url: video.play || video.video?.play_addr?.url_list?.[0] || "#", // Prioritize video.play
+        }
+      })
+      .filter(Boolean) // Remove null entries
 
     return NextResponse.json({ videos: videos || [] })
   } catch (error: any) {
