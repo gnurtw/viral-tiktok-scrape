@@ -1,10 +1,8 @@
 "use client"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { formatNumber } from "@/lib/utils"
-import { Loader2 } from "lucide-react" // Import Loader2 icon
 
 interface Video {
   id: string
@@ -19,18 +17,18 @@ interface Video {
 
 interface VideoResultsProps {
   videos: Video[]
-  onAIRewrite: (video: Video) => void
-  onGetTranscript: (video: Video) => void // New prop for getting transcript
-  transcribingVideoId: string | null // New prop for loading state
-  videoTranscripts: Map<string, string> // New prop to check if transcript exists
+  // onAIRewrite: (video: Video) => void; // Comment out
+  // onGetTranscript: (video: Video) => void; // Comment out
+  // transcribingVideoId: string | null; // Comment out
+  // videoTranscripts: Map<string, string>; // Comment out
 }
 
 export function VideoResults({
   videos,
-  onAIRewrite,
-  onGetTranscript,
-  transcribingVideoId,
-  videoTranscripts,
+  // onAIRewrite, // Comment out
+  // onGetTranscript, // Comment out
+  // transcribingVideoId, // Comment out
+  // videoTranscripts, // Comment out
 }: VideoResultsProps) {
   return (
     <div className="overflow-x-auto">
@@ -48,8 +46,10 @@ export function VideoResults({
         </TableHeader>
         <TableBody>
           {videos.map((video) => {
-            const isTranscribing = transcribingVideoId === video.id
-            const hasTranscript = videoTranscripts.has(video.id) && !videoTranscripts.get(video.id)?.startsWith("Lỗi:")
+            // const isTranscribing = transcribingVideoId === video.id
+            // const hasTranscript = videoTranscripts.has(video.id) && !videoTranscripts.get(video.id)?.startsWith("Lỗi:")
+            const isTranscribing = false
+            const hasTranscript = false
 
             return (
               <TableRow key={video.id} className="hover:bg-gray-50">
@@ -78,32 +78,34 @@ export function VideoResults({
                 <TableCell className="text-right font-semibold text-green-600">{video.engagement_rate}</TableCell>
                 <TableCell className="text-center">
                   <div className="flex flex-col gap-2 items-center">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onGetTranscript(video)}
-                      disabled={isTranscribing || hasTranscript}
-                      className="text-purple-600 border-purple-600 hover:bg-purple-50 w-full"
-                    >
-                      {isTranscribing ? (
-                        <span className="flex items-center">
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" /> Đang lấy...
-                        </span>
-                      ) : hasTranscript ? (
-                        "Đã có Transcript"
-                      ) : (
-                        "Lấy Transcript"
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onAIRewrite(video)}
-                      disabled={!hasTranscript || isTranscribing} // Only enable if transcript is available
-                      className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full"
-                    >
-                      Viết lại nội dung
-                    </Button>
+                    {/* Comment out Get Transcript Button */}
+                    {/* <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onGetTranscript(video)}
+                    disabled={isTranscribing || hasTranscript}
+                    className="text-purple-600 border-purple-600 hover:bg-purple-50 w-full"
+                  >
+                    {isTranscribing ? (
+                      <span className="flex items-center">
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" /> Đang lấy...
+                      </span>
+                    ) : hasTranscript ? (
+                      "Đã có Transcript"
+                    ) : (
+                      "Lấy Transcript"
+                    )}
+                  </Button> */}
+                    {/* Comment out AI Rewrite Button */}
+                    {/* <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onAIRewrite(video)}
+                    disabled={!hasTranscript || isTranscribing}
+                    className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full"
+                  >
+                    Viết lại nội dung
+                  </Button> */}
                   </div>
                 </TableCell>
               </TableRow>
