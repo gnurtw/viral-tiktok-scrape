@@ -1,7 +1,7 @@
 "use client"
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Button } from "@/components/ui/button" // Re-enable Button import
+import { Button } from "@/components/ui/button"
 import Image from "next/image"
 import { formatNumber } from "@/lib/utils"
 
@@ -18,13 +18,10 @@ interface Video {
 
 interface VideoResultsProps {
   videos: Video[]
-  onAIRewrite: (video: Video) => void // Re-enable prop
+  onAIRewrite: (video: Video) => void
 }
 
-export function VideoResults({
-  videos,
-  onAIRewrite, // Re-enable prop
-}: VideoResultsProps) {
+export function VideoResults({ videos, onAIRewrite }: VideoResultsProps) {
   return (
     <div className="overflow-x-auto">
       <Table className="min-w-full bg-white rounded-lg shadow-sm">
@@ -37,12 +34,13 @@ export function VideoResults({
             <TableHead className="text-right text-gray-700">Lượt chia sẻ</TableHead>
             <TableHead className="text-right text-gray-700">Tỷ lệ tương tác</TableHead>
             <TableHead className="text-center text-gray-700">Hành động</TableHead>
+            <TableHead className="text-center text-gray-700">Nguồn</TableHead> {/* New Source column header */}
           </TableRow>
         </TableHeader>
         <TableBody>
           {videos.map((video) => {
-            const isTranscribing = false // Giữ lại nếu bạn muốn dùng cho nút AI rewrite
-            const hasTranscript = false // Giữ lại nếu bạn muốn dùng cho nút AI rewrite
+            const isTranscribing = false
+            const hasTranscript = false
 
             return (
               <TableRow key={video.id} className="hover:bg-gray-50">
@@ -75,12 +73,24 @@ export function VideoResults({
                       variant="outline"
                       size="sm"
                       onClick={() => onAIRewrite(video)}
-                      disabled={isTranscribing} // Cập nhật điều kiện disabled nếu bạn muốn giữ nút AI rewrite
+                      disabled={isTranscribing}
                       className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full"
                     >
                       Viết lại nội dung
                     </Button>
                   </div>
+                </TableCell>
+                <TableCell className="text-center">
+                  {" "}
+                  {/* New Source column cell */}
+                  <a
+                    href={video.video_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 hover:underline text-sm"
+                  >
+                    Xem trên TikTok
+                  </a>
                 </TableCell>
               </TableRow>
             )
