@@ -81,8 +81,6 @@ export function VideoResults({ videos, onAIRewrite }: VideoResultsProps) {
                   </div>
                 </TableCell>
                 <TableCell className="text-center">
-                  {" "}
-                  {/* New Source column cell */}
                   <a
                     href={`https://www.tiktok.com/player/v1/${video.id}`}
                     target="_blank"
