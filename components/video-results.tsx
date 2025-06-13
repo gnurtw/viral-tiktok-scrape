@@ -84,7 +84,7 @@ export function VideoResults({ videos, onAIRewrite }: VideoResultsProps) {
                   {" "}
                   {/* New Source column cell */}
                   <a
-                    href={video.video_url}
+                    href={`https://www.tiktok.com/player/v1/${video.id}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-500 hover:underline text-sm"
