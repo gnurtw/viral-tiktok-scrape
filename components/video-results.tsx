@@ -4,7 +4,6 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button" // Re-enable Button import
 import Image from "next/image"
 import { formatNumber } from "@/lib/utils"
-import { Loader2 } from "lucide-react" // Re-enable Loader2 import
 
 interface Video {
   id: string
@@ -20,17 +19,11 @@ interface Video {
 interface VideoResultsProps {
   videos: Video[]
   onAIRewrite: (video: Video) => void // Re-enable prop
-  onGetTranscript: (video: Video) => void // Re-enable prop
-  transcribingVideoId: string | null // Re-enable prop
-  videoTranscripts: Map<string, string> // Re-enable prop
 }
 
 export function VideoResults({
   videos,
   onAIRewrite, // Re-enable prop
-  onGetTranscript, // Re-enable prop
-  transcribingVideoId, // Re-enable prop
-  videoTranscripts, // Re-enable prop
 }: VideoResultsProps) {
   return (
     <div className="overflow-x-auto">
@@ -48,8 +41,8 @@ export function VideoResults({
         </TableHeader>
         <TableBody>
           {videos.map((video) => {
-            const isTranscribing = transcribingVideoId === video.id
-            const hasTranscript = videoTranscripts.has(video.id) && !videoTranscripts.get(video.id)?.startsWith("Lỗi:")
+            const isTranscribing = false // Giữ lại nếu bạn muốn dùng cho nút AI rewrite
+            const hasTranscript = false // Giữ lại nếu bạn muốn dùng cho nút AI rewrite
 
             return (
               <TableRow key={video.id} className="hover:bg-gray-50">
@@ -81,25 +74,8 @@ export function VideoResults({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => onGetTranscript(video)}
-                      disabled={isTranscribing || hasTranscript}
-                      className="text-purple-600 border-purple-600 hover:bg-purple-50 w-full"
-                    >
-                      {isTranscribing ? (
-                        <span className="flex items-center">
-                          <Loader2 className="h-4 w-4 animate-spin mr-2" /> Đang lấy...
-                        </span>
-                      ) : hasTranscript ? (
-                        "Đã có Transcript"
-                      ) : (
-                        "Lấy Transcript"
-                      )}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
                       onClick={() => onAIRewrite(video)}
-                      disabled={!hasTranscript || isTranscribing} // Only enable if transcript is available
+                      disabled={isTranscribing} // Cập nhật điều kiện disabled nếu bạn muốn giữ nút AI rewrite
                       className="text-blue-600 border-blue-600 hover:bg-blue-50 w-full"
                     >
                       Viết lại nội dung

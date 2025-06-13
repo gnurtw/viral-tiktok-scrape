@@ -37,7 +37,8 @@ export async function POST(request: Request) {
     })
 
     // Trả về cả nội dung AI và transcript gốc đã nhận
-    return NextResponse.json({ rewrite: text, transcript: transcript })
+    // return NextResponse.json({ rewrite: text, transcript: transcript }) // Xóa dòng này
+    return NextResponse.json({ rewrite: text }) // Thay thế bằng dòng này
   } catch (error: any) {
     console.error("Error generating AI content:", error)
     return NextResponse.json({ error: `Không thể tạo nội dung AI: ${error.message}` }, { status: 500 })

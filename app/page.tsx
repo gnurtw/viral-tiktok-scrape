@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react"
 import { SearchForm } from "@/components/search-form"
 import { VideoResults } from "@/components/video-results"
-import { AIRewriteDialog } from "@/components/ai-rewrite-dialog" // Re-enable import
+import { AIRewriteDialog } from "@/components/ai-rewrite-dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Terminal } from "lucide-react"
@@ -34,10 +34,6 @@ export default function HomePage() {
   const [publishTime, setPublishTime] = useState("0")
 
   // Re-enable state variables related to transcription and AI rewrite
-  const [videoTranscripts, setVideoTranscripts] = useState<Map<string, string>>(new Map()) // Map videoId to transcript
-  const [transcribingVideoId, setTranscribingVideoId] = useState<string | null>(null) // To show loading state for transcribe button
-  const [transcribeError, setTranscribeError] = useState<string | null>(null)
-
   const [isAIRewriteDialogOpen, setIsAIRewriteDialogOpen] = useState(false)
   const [currentVideoForAI, setCurrentVideoForAI] = useState<{
     title: string
@@ -45,7 +41,6 @@ export default function HomePage() {
     videoUrl?: string
   } | null>(null)
   const [aiGeneratedContent, setAiGeneratedContent] = useState<string | null>(null)
-  const [originalVideoTranscriptInDialog, setOriginalVideoTranscriptInDialog] = useState<string | null>(null) // Transcript displayed in dialog
   const [aiLoading, setAiLoading] = useState(false)
   const [aiError, setAiError] = useState<string | null>(null)
 
@@ -87,8 +82,6 @@ export default function HomePage() {
       setLoading(true)
       setError(null)
       setVideos([])
-      setVideoTranscripts(new Map()) // Clear transcripts on new search
-      setTranscribeError(null)
       setKeyword(searchKeyword)
 
       try {
@@ -117,43 +110,9 @@ export default function HomePage() {
     [isLimitReached, searchesRemaining],
   )
 
-  // Re-enable handleGetTranscript and handleAIRewrite functions
-  const handleGetTranscript = useCallback(async (video: Video) => {
-    setTranscribingVideoId(video.id)
-    setTranscribeError(null)
-    setVideoTranscripts((prev) => {
-      const newMap = new Map(prev)
-      newMap.set(video.id, "Đang chuyển đổi giọng nói...") // Optimistic update
-      return newMap
-    })
-
-    try {
-      const response = await fetch("/api/transcribe-video", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ videoUrl: video.video_url }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || `Đã có lỗi xảy ra khi lấy transcript: ${response.statusText}`)
-      }
-
-      const data = await response.json()
-      setVideoTranscripts((prev) => new Map(prev).set(video.id, data.transcript))
-    } catch (err: any) {
-      setTranscribeError(err.message)
-      setVideoTranscripts((prev) => new Map(prev).set(video.id, `Lỗi: ${err.message}`)) // Update with error message
-    } finally {
-      setTranscribingVideoId(null)
-    }
-  }, [])
-
   const handleAIRewrite = useCallback(
     async (video: Video) => {
-      const transcript = videoTranscripts.get(video.id) || "" // Get transcript from state
+      const transcript = "" // Thay thế bằng một chuỗi rỗng hoặc xử lý khác nếu cần
 
       setCurrentVideoForAI({
         title: video.title,
@@ -161,7 +120,6 @@ export default function HomePage() {
         videoUrl: video.video_url,
       })
       setAiGeneratedContent(null)
-      setOriginalVideoTranscriptInDialog(transcript) // Set transcript for dialog
       setAiError(null)
       setAiLoading(true)
       setIsAIRewriteDialogOpen(true)
@@ -175,7 +133,7 @@ export default function HomePage() {
           body: JSON.stringify({
             videoTitle: video.title,
             videoDescription: `Video này có ${video.play_count} lượt xem, ${video.digg_count} lượt thích, ${video.share_count} lượt chia sẻ.`,
-            transcript: transcript, // Pass transcript to AI rewrite API
+            transcript: transcript, // Vẫn truyền transcript (có thể là rỗng)
           }),
         })
 
@@ -192,8 +150,8 @@ export default function HomePage() {
         setAiLoading(false)
       }
     },
-    [videoTranscripts],
-  ) // Depend on videoTranscripts
+    [], // Thay đổi dependency array thành rỗng hoặc các dependency khác cần thiết
+  )
 
   return (
     <main className="flex min-h-screen flex-col items-center p-4 md:p-8 lg:p-12 bg-gray-50">
@@ -222,26 +180,12 @@ export default function HomePage() {
             </Alert>
           )}
 
-          {transcribeError && (
-            <Alert variant="destructive" className="mt-6">
-              <Terminal className="h-4 w-4" />
-              <AlertTitle>Lỗi Transcript!</AlertTitle>
-              <AlertDescription>{transcribeError}</AlertDescription>
-            </Alert>
-          )}
-
           {loading && <div className="text-center mt-8 text-gray-600">Đang tìm kiếm video...</div>}
 
           {!loading && videos.length > 0 && (
             <>
               <Separator className="my-8" />
-              <VideoResults
-                videos={videos}
-                onAIRewrite={handleAIRewrite}
-                onGetTranscript={handleGetTranscript}
-                transcribingVideoId={transcribingVideoId}
-                videoTranscripts={videoTranscripts}
-              />
+              <VideoResults videos={videos} onAIRewrite={handleAIRewrite} />
             </>
           )}
 
@@ -257,7 +201,6 @@ export default function HomePage() {
         isOpen={isAIRewriteDialogOpen}
         onOpenChange={setIsAIRewriteDialogOpen}
         aiContent={aiGeneratedContent}
-        originalTranscript={originalVideoTranscriptInDialog}
         loading={aiLoading}
         error={aiError}
         videoTitle={currentVideoForAI?.title || ""}
